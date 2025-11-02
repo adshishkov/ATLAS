@@ -26,7 +26,7 @@ bot = commands.Bot(
 async def on_ready():
     print(bot.user.name + " was successfully launched")
     print("Extensions loaded: " + str(len(bot.cogs)))
-    print("Main developer: " + bot.owner.name)
+    print("Main developer: adshishkov")
 
 
 ### LOAD EXTENSIONS
