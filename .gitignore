@@ -1,0 +1,9 @@
+### FOLDERS
+assets
+databases
+__pycache__
+venv
+logs
+
+### FILES
+.env
