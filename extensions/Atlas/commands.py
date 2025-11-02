@@ -59,7 +59,18 @@ class AtlasCommands(commands.Cog):
             embed.set_footer(
                     text = f"© {self.bot.user.name}, {datetime.now().year} | Все права защищены.",
                     icon_url = self.bot.user.display_avatar.url)
-            await interaction.edit_original_message(embed = embed)
+            message = await interaction.channel.send(embed = embed)
+            # Create thread
+            try:
+                thread = await message.create_thread(
+                    name = f"📑 | Список обновлений {major}.{minor}.{maintenance}",
+                    auto_archive_duration = 10080  # In the archive in 7 days
+                )                  
+                await thread.send("Обратите внимание, что в данной ветке действуют такие же правила, как и на обычные каналы!")
+            except Exception as e:
+                print(f"Ошибка при создании ветки: {e}")
+                await interaction.followup.send("Не удалось создать ветку для обновления", ephemeral = True)
+            await interaction.edit_original_message("Сообщение успешно отправлено")
         else:
             return await interaction.edit_original_message(content = "**Ошибка:** У вас нет прав на использование этой команды")
 
