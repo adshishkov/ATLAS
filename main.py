@@ -4,13 +4,26 @@ import disnake
 
 from disnake.ext import commands
 from dotenv import load_dotenv
+from utils.config_manager import ConfigManager
 
 sys.stdout.reconfigure(encoding = 'utf-8')
+config_manager = ConfigManager()
 
+### DYNAMIC PREFIX FUNCTION
+async def get_prefix(bot, message):
+    """Получает префикс для конкретного сервера"""
+    if not message.guild:
+        return "$"
+    try:
+        config = await config_manager.get_config(message.guild.id)
+        prefix = config.get("prefix", "$")
+        return commands.when_mentioned_or(prefix)(bot, message)
+    except Exception:
+        return commands.when_mentioned_or("$")(bot, message)
 
 ### ATLAS BOT
 bot = commands.Bot(
-    command_prefix = "$",
+    command_prefix = get_prefix,
     intents = disnake.Intents.all(), 
     activity = disnake.Activity(
         type = disnake.ActivityType.watching, 
@@ -24,6 +37,7 @@ bot = commands.Bot(
 ### EVENT STATRTING BOT
 @bot.event
 async def on_ready():
+    await config_manager.setup_database()
     print(bot.user.name + " was successfully launched")
     print("Extensions loaded: " + str(len(bot.cogs)))
     print("Main developer: adshishkov")
